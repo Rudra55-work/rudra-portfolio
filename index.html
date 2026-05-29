@@ -537,20 +537,20 @@
               I am actively seeking software development internships, freelance tasks, or technical collaborations. If you have an exciting project, want to discuss software architectures, or simply explore ideas, don't hesitate to reach out!
             </p>
 
-            <form class="contact-form" id="contact-form">
+            <form class="contact-form" id="contact-form" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST">
               <div class="form-row">
                 <div class="form-group">
                   <label for="form-name">Name</label>
-                  <input type="text" id="form-name" placeholder="John Doe" required />
+                  <input type="text" id="form-name" name="name" placeholder="John Doe" required />
                 </div>
                 <div class="form-group">
                   <label for="form-email">Email</label>
-                  <input type="email" id="form-email" placeholder="john@example.com" required />
+                  <input type="email" id="form-email" name="email" placeholder="john@example.com" required />
                 </div>
               </div>
               <div class="form-group">
                 <label for="form-message">Message</label>
-                <textarea id="form-message" rows="5" placeholder="Let's build something remarkable..." required></textarea>
+                <textarea id="form-message" name="message" rows="5" placeholder="Let's build something remarkable..." required></textarea>
               </div>
               <button type="submit" class="btn btn-primary btn-full glow-btn">
                 <span>Send Message</span>

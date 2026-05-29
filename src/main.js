@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================================================
-  // 8. CONTACT FORM SUBMIT (MOCK API PIPELINE)
+  // 8. CONTACT FORM SUBMIT (FORMSPREE API PIPELINE)
   // ==========================================================================
   const contactForm = document.getElementById('contact-form');
   const formFeedback = document.getElementById('form-feedback');
@@ -342,22 +342,57 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtnText.textContent = 'Sending Message...';
       formFeedback.className = 'form-feedback';
       formFeedback.textContent = '';
+      formFeedback.style.display = 'none';
 
-      setTimeout(() => {
+      // Get formspree action URL
+      const formAction = contactForm.getAttribute('action') || 'https://formspree.io/f/YOUR_FORMSPREE_ID';
+
+      if (formAction.includes('YOUR_FORMSPREE_ID')) {
         submitBtn.disabled = false;
         submitBtnText.textContent = originalText;
-        
-        // Show success simulation
-        formFeedback.classList.add('success');
-        formFeedback.textContent = 'Success! Your message was transmitted. Rudra will contact you shortly.';
-        
-        contactForm.reset();
-        
-        // Clear message banner after 5s
-        setTimeout(() => {
-          formFeedback.style.display = 'none';
-        }, 5000);
-      }, 1500);
+        formFeedback.className = 'form-feedback error';
+        formFeedback.style.display = 'block';
+        formFeedback.textContent = 'Configuration Error: Please update the action attribute in index.html with your Formspree Form ID!';
+        return;
+      }
+
+      const formData = new FormData(contactForm);
+
+      fetch(formAction, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => {
+        submitBtn.disabled = false;
+        submitBtnText.textContent = originalText;
+
+        if (response.ok) {
+          formFeedback.className = 'form-feedback success';
+          formFeedback.style.display = 'block';
+          formFeedback.textContent = 'Success! Your message was received by Rudra. Thank you!';
+          contactForm.reset();
+        } else {
+          response.json().then(data => {
+            if (Object.hasOwnProperty.call(data, 'errors')) {
+              formFeedback.textContent = data.errors.map(error => error.message).join(', ');
+            } else {
+              formFeedback.textContent = 'Oops! There was a problem submitting your message. Please try again.';
+            }
+            formFeedback.className = 'form-feedback error';
+            formFeedback.style.display = 'block';
+          });
+        }
+      })
+      .catch(error => {
+        submitBtn.disabled = false;
+        submitBtnText.textContent = originalText;
+        formFeedback.className = 'form-feedback error';
+        formFeedback.style.display = 'block';
+        formFeedback.textContent = 'Oops! Network failure. Please check your internet connection and try again.';
+      });
     });
   }
 });
